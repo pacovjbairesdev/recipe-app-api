@@ -30,7 +30,10 @@ class PrivateTagsApiTests(TestCase):
     """Test the authorized user Tags API"""
 
     def setUp(self):
-        self.user = get_user_model().objects.create_user('test@hola.com', 'password')
+        self.user = get_user_model().objects.create_user(
+                        'test@hola.com',
+                        'password'
+                        )
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
@@ -49,12 +52,33 @@ class PrivateTagsApiTests(TestCase):
 
     def test_retrieve_my_tags(self):
         """Test that tags returned are for the authenticated user"""
-        user2 = get_user_model().objects.create_user('test2@hola.com', 'password2')
-        tag1 = Tag.objects.create(name='Fruity', user=user2)
+        user2 = get_user_model().objects.create_user(
+                    'test2@hola.com',
+                    'password2'
+                    )
+        Tag.objects.create(name='Fruity', user=user2)
         tag2 = Tag.objects.create(name='Dessert', user=self.user)
 
         res = self.client.get(TAGS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0].name, tag.name)
+        self.assertEqual(res.data[0]['name'], tag2.name)
+
+    def test_create_tags_successful(self):
+        """Test creating a new tag"""
+        payload = {'name': 'test'}
+        self.client.post(TAGS_URL, payload)
+
+        exists = Tag.objects.filter(
+            user=self.user,
+            name=payload['name']
+        ).exists()
+        self.assertTrue(exists)
+
+    def test_create_invalid_tag(self):
+        """Test create an invalid tag"""
+        payload = {'name': ''}
+        res = self.client.post(TAGS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

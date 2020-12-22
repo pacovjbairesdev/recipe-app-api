@@ -85,5 +85,5 @@ class ModelTests(TestCase):
         mock_uuid.return_value = uuid
         file_path = models.recipe_image_file_path(None, 'myimage.jpeg')
 
-        exp_path = f'uploads/recipe/{uuid}.jpg'
+        exp_path = f'uploads/recipe/{uuid}.jpeg'
         self.assertEqual(exp_path, file_path)

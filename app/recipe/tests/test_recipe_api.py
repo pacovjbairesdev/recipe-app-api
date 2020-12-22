@@ -222,7 +222,7 @@ class PrivateRecipeAPITests(TestCase):
 
         res = self.client.get(
             RECIPES_URL,
-            {'tags': f'{tag1.id};{tag2.id}'}
+            {'tags': f'{tag1.id}|{tag2.id}'}
         )
 
         serializer1 = RecipeSerializer(recipe1)
@@ -247,7 +247,7 @@ class PrivateRecipeAPITests(TestCase):
 
         res = self.client.get(
             RECIPES_URL,
-            {'ingredients': f'{ingredient1.id};{ingredient2.id}'}
+            {'ingredients': f'{ingredient1.id}|{ingredient2.id}'}
         )
 
         serializer1 = RecipeSerializer(recipe1)
